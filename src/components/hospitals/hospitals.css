@@ -1,0 +1,86 @@
+.special_container .careheader_head{
+   margin-bottom: 250px;
+
+   
+
+}
+.hospital_cover {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1592392513912-fd639ff32e98?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTAwfHxtZWRpY2FsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60);
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    text-align: center;
+}
+
+.hospital_container {
+ margin-top: 200px;
+}
+
+.header_heading {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.hospital_parag {
+    color: #fff;
+}
+
+.hospital_heading {
+    color: #fff;
+}
+
+
+
+.hospital_card {
+    background: url("https://images.unsplash.com/photo-1586773860383-dab5f3bc1bcc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8aG9zcGl0YWwlMjBidWlsZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60");
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+    color: #fff;
+}
+
+.hospital_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    grid-auto-rows: 350px;
+}
+
+
+.hospital_overlay {
+    position: absolute;
+    background-color: #53BAD5;
+    width: 100%;
+    left: 0;
+    bottom: 50%;
+    overflow: hidden;
+    height: 0%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s ease;
+    gap: 1rem;
+}
+
+.hospital_card:hover .hospital_overlay {
+    bottom: 0;
+    height: 100%;
+    transition: 0.5s;
+
+}
+
+.loading{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://images.unsplash.com/photo-1592392513912-fd639ff32e98?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTAwfHxtZWRpY2FsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60);
+}
