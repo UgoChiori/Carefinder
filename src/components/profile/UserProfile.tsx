@@ -1,16 +1,18 @@
 import React from "react";
 import Profile from "./Profilepage";
+import "./profilepage.css"
 
 const UserProfile: React.FC = () => {
   // Sample user data
   const user = {
-    name: "John Doe",
-    age: 30,
-    email: "johndoe@example.com",
+    name: "",
+    age: Number,
+    email: "",
+    image: ""
   };
 
   return (
-    <div>
+    <div className="userprofile">
       <h1>User Profile</h1>
       <Profile {...user} />
     </div>
