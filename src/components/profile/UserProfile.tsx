@@ -5,10 +5,10 @@ import "./profilepage.css"
 const UserProfile: React.FC = () => {
   // Sample user data
   const user = {
-    name: "",
-    age: Number,
-    email: "",
-    image: ""
+    name: "Ugo",
+    age: 0,
+    email: "okon",
+    
   };
 
   return (

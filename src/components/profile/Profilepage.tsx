@@ -12,7 +12,7 @@ const Profile: React.FC<ProfileProps> = ({ name, age, email }) => {
   const [editedName, setEditedName] = useState(name);
   const [editedAge, setEditedAge] = useState(age);
   const [editedEmail, setEditedEmail] = useState(email);
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [, setProfilePicture] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState<string | null>(null);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +72,7 @@ const Profile: React.FC<ProfileProps> = ({ name, age, email }) => {
           <h2>{editedName}</h2>
           <p>Age: {editedAge}</p>
           <p>Email: {editedEmail}</p>
-          {profilePicture && <img src={previewURL} alt="Profile" style={{ width: "100px" }} />}
+         
           <button onClick={toggleEditMode}>Edit</button>
         </>
       )}
