@@ -24,28 +24,26 @@ function HospitalSearchPage() {
 
   // GET ALL HOSPITAL API CALLS
   const getAllHospitals = () => {
-    axios
-      .get(_API_URL)
-      .then((response) => {
+    try {
+      axios.post('/api', {_API_URL}).then((response) => {
         console.log(response.data.results);
         setHospitals(response.data.results);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // GET SEARCHED HOSPITALS API CALL
   const getSearchedHospitals = () => {
-    axios
-      .get(SEARCH_API + search)
-      .then((response) => {
+    try {
+      axios.post('/search', {SEARCH_API}).then((response) => {
         console.log(response.data.results);
         setHospitals(response.data.results);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // USE EFFECT HOOK TO CALL API ON PAGE LOAD AND ON SEARCH
@@ -73,12 +71,12 @@ function HospitalSearchPage() {
 
       <div className="hospitals-container">
         {hospitals.length > 0 ? (
-          hospitals.map((hospital: any, index: number) => (
+          hospitals.map((hospital: object, index: number) => (
             <HospitalSearchResults
               hospital={hospital}
               key={index}
               index={index}
-              handleHospitalClick={function (index: number): void {
+              handleHospitalClick={function (): void {
                 throw new Error("Function not implemented.");
               }}
             />
