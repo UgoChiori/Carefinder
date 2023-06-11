@@ -4,7 +4,7 @@ import React from "react";
 
 // PROPS INTERFACE
 interface Props {
-  hospital: unknown;
+  hospital: Record<string, any>;
   key: number;
   index: number;
   handleHospitalClick: (index: number) => void;
@@ -22,9 +22,8 @@ const HospitalSearchResults: React.FC<Props> = ({
       key={key}
       onClick={() => handleHospitalClick(index)}
     >
-      <div className="hospital-search-results__name">{hospitals.name}</div>
-      <div className="hospital-search-results__address">{hospitals.address}</div>
-      
+      <div className="hospital-search-results__name">{hospital.name}</div>
+      <div className="hospital-search-results__address">{hospital.formatted_address}</div>
     </div>
   );
 
