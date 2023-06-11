@@ -1,338 +1,212 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
-import { auth } from "./Firebase";
-import "./login.css";
-import UserProfile from "../components/profile/UserProfile";
+import React, { useRef, useState } from 'react';
+import { Form, Button, Card, Alert } from 'react-bootstrap';
+import { useAuth } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 
-const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [name, setName] = useState("");
+export default function Signin() {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const { signin } = useAuth();
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!emailRef.current || !passwordRef.current) return;
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Perform login logic
-      console.log("Login successful");
-      setLoggedIn(true);
-      setName(email.split("@")[0]); // Extract the name from the email
-    } catch (error) {
-      console.log("Login failed:", error);
+      setError('');
+      setLoading(true);
+      await signin(emailRef.current.value, passwordRef.current.value);
+      navigate('/hospitals');
+    } catch {
+      setError('Failed to sign in');
     }
-  };
-
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-
-    try {
-      await signInWithPopup(auth, provider);
-      // Perform login logic
-      console.log("Google sign-in successful");
-      setLoggedIn(true);
-      setName(auth.currentUser?.displayName || "");
-    } catch (error) {
-      console.log("Google sign-in failed:", error);
-    }
-  };
-
-  const handleGithubSignIn = async () => {
-    const provider = new GithubAuthProvider();
-
-    try {
-      await signInWithPopup(auth, provider);
-      // Perform login logic
-      console.log("GitHub sign-in successful");
-      setLoggedIn(true);
-      setName(auth.currentUser?.displayName || "");
-    } catch (error) {
-      console.log("GitHub sign-in failed:", error);
-    }
-  };
-
-  if (loggedIn) {
-    return (
-      <div className="login-form-wrapper">
-        <div className="login-form">
-          <h1 className="welcome-message">Welcome, {name}!</h1>
-          <div className="user-profile">
-            <UserProfile />
-          </div>
-        </div>
-      </div>
-    );
+    setLoading(false);
   }
 
   return (
-    <div className="login-form-wrapper">
-      <div className="login-form">
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <>
+      <Card>
+        <Card.Body>
+          <h2 className="text-center mb-4">Sign In</h2>
+
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group id="email" className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" ref={emailRef} required />
+            </Form.Group>
+
+            <Form.Group id="password" className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" ref={passwordRef} required />
+            </Form.Group>
+
+            <Button disabled={loading} className="w-100" type="submit">
+              Sign In
+            </Button>
+          </Form>
+
+          <div className="w-100 text-center mt-3">
+            <Link to="/forgot-password">Forgot Password?</Link>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password:</label>
-            <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </div>
-          <button type="submit">Login</button>
-          <button onClick={handleGoogleSignIn}>Login with Google</button>
-          <button onClick={handleGithubSignIn}>Login with GitHub</button>
-        </form>
+        </Card.Body>
+      </Card>
+
+      <div className="w-100 text-center mt-2">
+        Need an account? <Link to="/signup">Sign Up</Link>
       </div>
-    </div>
+    </>
   );
-};
-
-export default LoginForm;
+}
 
 
 
 
 
-// import React, { useState } from "react";
-// import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, FormEvent } from "react";
 // import { auth } from "./Firebase";
+// import {
+//   signInWithEmailAndPassword,
+//   signInWithPopup,
+//   GoogleAuthProvider,
+//   signOut,
+// } from "firebase/auth";
+// import { useNavigate } from "react-router-dom";
 // import "./login.css";
-// import UserProfile from "../components/profile/UserProfile";
 
 // const LoginForm: React.FC = () => {
-//   const [email, setEmail] = React.useState("");
-//   const [password, setPassword] = React.useState("");
+//   const navigate = useNavigate();
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
 //   const [loggedIn, setLoggedIn] = useState(false);
+//   const [name, setName] = useState<string | null>(null);
 
-//   const handleSubmit = async (e: React.FormEvent) => {
+//   useEffect(() => {
+//     // Check if the user is already logged in
+//     const unsubscribe = auth.onAuthStateChanged((user) => {
+//       if (user) {
+//         setLoggedIn(true);
+//         setName(user.displayName || null);
+//       } else {
+//         setLoggedIn(false);
+//         setName(null);
+//       }
+//     });
+
+//     return () => {
+//       // Unsubscribe from the auth state listener when component unmounts
+//       unsubscribe();
+//     };
+//   }, []);
+
+//   const handleSubmit = async (e: FormEvent) => {
 //     e.preventDefault();
 
 //     try {
 //       await signInWithEmailAndPassword(auth, email, password);
-//       // Perform login logic
 //       console.log("Login successful");
+//       navigate("/hospitals");
 //       setLoggedIn(true);
+//       setName(auth.currentUser?.displayName || null);
 //     } catch (error) {
 //       console.log("Login failed:", error);
 //     }
 //   };
 
-//   const handleGoogleSignIn = async () => {
-//     const provider = new GoogleAuthProvider();
-
+//   const handleSignIn = async (provider: GoogleAuthProvider) => {
 //     try {
 //       await signInWithPopup(auth, provider);
-//       // Perform login logic
-//       console.log("Google sign-in successful");
+
+//       navigate("/hospitals");
 //       setLoggedIn(true);
+//       setName(auth.currentUser?.displayName || null);
 //     } catch (error) {
-//       console.log("Google sign-in failed:", error);
+//       alert(`${provider.providerId} login failed`);
 //     }
 //   };
 
-//   const handleGithubSignIn = async () => {
-//     const provider = new GithubAuthProvider();
-
+//   const handleLogout = async () => {
 //     try {
-//       await signInWithPopup(auth, provider);
-//       // Perform login logic
-//       console.log("GitHub sign-in successful");
-//       setLoggedIn(true);
+//       await signOut(auth);
+//       console.log("Logout successful");
+//       navigate("/");
+//       setLoggedIn(false);
+//       setName(null);
 //     } catch (error) {
-//       console.log("GitHub sign-in failed:", error);
+//       console.log("Logout failed:", error);
 //     }
 //   };
-
-//   if (loggedIn) {
-//     return (
-//       <div className="login-form-wrapper">
-//         <div className="login-form">
-//           <h1 className="welcome-message">Welcome, {email}!</h1>
-//           <div className="user-profile">
-//             <UserProfile />
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   }
 
 //   return (
 //     <div className="login-form-wrapper">
 //       <div className="login-form">
-//         <h2>Login</h2>
-//         <form onSubmit={handleSubmit}>
-//           <div className="form-group">
-//             <label htmlFor="email">Email:</label>
-//             <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+//         <h1>Login</h1>
+//         {loggedIn ? (
+//           <div>
+//             <h1>Welcome, {name || ""}!</h1>
+//             <button onClick={handleLogout}>Logout</button>
 //           </div>
-//           <div className="form-group">
-//             <label htmlFor="password">Password:</label>
-//             <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+//         ) : (
+//           <form onSubmit={handleSubmit}>
+//             <div className="form-group">
+//               <label htmlFor="email">Email</label>
+//               <input
+//                 type="email"
+//                 id="email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//                 required
+//               />
+//             </div>
+//             <div className="form-group">
+//               <label htmlFor="password">Password</label>
+//               <input
+//                 type="password"
+//                 id="password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//                 required
+//               />
+//             </div>
+//             <button
+//               className="login-methods"
+          
+//               type="submit"
+//             >
+//               Login
+//             </button>
+//           </form>
+//         )}
+
+//         {!loggedIn && (
+//           <div className="login-methods">
+//             <button onClick={() => handleSignIn(new GoogleAuthProvider())}>
+//               Sign in with Google
+//             </button>
 //           </div>
-//           <button type="submit">Login</button>
-//           <button onClick={handleGoogleSignIn}>Login with Google</button>
-//           <button onClick={handleGithubSignIn}>Login with GitHub</button>
-//         </form>
+//         )}
+
+//         {!loggedIn && (
+//           <button onClick={() => navigate("/register")}>
+//             Need an account? Register
+//           </button>
+//         )}
 //       </div>
 //     </div>
 //   );
 // };
 
 // export default LoginForm;
-
-
-
-// // import React, { useState } from "react";
-// // import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
-// // import { auth } from "./Firebase";
-// // import "./login.css";
-// // import UserProfile from "../components/profile/UserProfile"
-
-// // const LoginForm: React.FC = () => {
-// //   const [email, setEmail] = React.useState("");
-// //   const [password, setPassword] = React.useState("");
-// //   const [loggedIn, setLoggedIn] = useState(false);
-
-// //   const handleSubmit = async (e: React.FormEvent) => {
-// //     e.preventDefault();
-
-// //     try {
-// //       await signInWithEmailAndPassword(auth, email, password);
-// //       // Perform login logic
-// //       console.log("Login successful");
-// //       setLoggedIn(true);
-// //     } catch (error) {
-// //       console.log("Login failed:", error);
-// //     }
-// //   };
-
-// //   const handleGoogleSignIn = async () => {
-// //     const provider = new GoogleAuthProvider();
-
-// //     try {
-// //       await signInWithPopup(auth, provider);
-// //       // Perform login logic
-// //       console.log("Google sign-in successful");
-// //       setLoggedIn(true);
-// //     } catch (error) {
-// //       console.log("Google sign-in failed:", error);
-// //     }
-// //   };
-
-// //   const handleGithubSignIn = async () => {
-// //     const provider = new GithubAuthProvider();
-
-// //     try {
-// //       await signInWithPopup(auth, provider);
-// //       // Perform login logic
-// //       console.log("GitHub sign-in successful");
-// //       setLoggedIn(true);
-// //     } catch (error) {
-// //       console.log("GitHub sign-in failed:", error);
-// //     }
-// //   };
-
-// //   if (loggedIn) {
-// //     return (
-// //       <div>
-// //         <h1>Welcome, {email}!</h1>
-// //         <UserProfile />
-// //       </div>
-// //     );
-// //   }
-
-// //   return (
-// //     <div className="login-form-wrapper">
-// //       <div className="login-form">
-// //         <h2>Login</h2>
-// //         <form onSubmit={handleSubmit}>
-// //           <div className="form-group">
-// //             <label htmlFor="email">Email:</label>
-// //             <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-// //           </div>
-// //           <div className="form-group">
-// //             <label htmlFor="password">Password:</label>
-// //             <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-// //           </div>
-// //           <button type="submit">Login</button>
-// //           <button onClick={handleGoogleSignIn}>Login with Google</button>
-// //           <button onClick={handleGithubSignIn}>Login with GitHub</button>
-// //         </form>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default LoginForm;
-
-
-
-
-// // import React from "react";
-// // import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
-// // import { auth } from "./Firebase";
-// // import "./login.css";
-
-// // const LoginForm: React.FC = () => {
-// //   const [email, setEmail] = React.useState("");
-// //   const [password, setPassword] = React.useState("");
-
-// //   const handleSubmit = async (e: React.FormEvent) => {
-// //     e.preventDefault();
-
-// //     try {
-// //       await signInWithEmailAndPassword(auth, email, password);
-// //       // Perform login logic
-// //       console.log("Login successful");
-// //     } catch (error) {
-// //       console.log("Login failed:", error);
-// //     }
-// //   };
-
-// //   const handleGoogleSignIn = async () => {
-// //     const provider = new GoogleAuthProvider();
-
-// //     try {
-// //       await signInWithPopup(auth, provider);
-// //       // Perform login logic
-// //       console.log("Google sign-in successful");
-// //     } catch (error) {
-// //       console.log("Google sign-in failed:", error);
-// //     }
-// //   };
-
-// //   const handleGithubSignIn = async () => {
-// //     const provider = new GithubAuthProvider();
-
-// //     try {
-// //       await signInWithPopup(auth, provider);
-// //       // Perform login logic
-// //       console.log("GitHub sign-in successful");
-// //     } catch (error) {
-// //       console.log("GitHub sign-in failed:", error);
-// //     }
-// //   };
-
-// //   return (
-// //     <div className="login-form-wrapper">
-// //       <div className="login-form">
-// //         <h2>Login</h2>
-// //         <form onSubmit={handleSubmit}>
-// //           <div className="form-group">
-// //             <label htmlFor="email">Email:</label>
-// //             <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-// //           </div>
-// //           <div className="form-group">
-// //             <label htmlFor="password">Password:</label>
-// //             <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-// //           </div>
-// //           <button type="submit">Login</button>
-// //           <button onClick={handleGoogleSignIn}>Login with Google</button>
-// //           <button onClick={handleGithubSignIn}>Login with GitHub</button>
-// //         </form>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default LoginForm;

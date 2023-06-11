@@ -1,6 +1,4 @@
-
-
-// import "./hospitals.css"
+import "./hospitals.css"
 
 type Props = {
   name: string;
@@ -36,7 +34,7 @@ const HospitalCard = (props: Props) => {
 
 export default HospitalCard;
 
-{
+
   /* <div className="hospital_container">
         <div className="hospital_wrap">
           <div className="header_heading">
@@ -60,4 +58,4 @@ export default HospitalCard;
           </div>
         </div>
       </div> */
-}
+

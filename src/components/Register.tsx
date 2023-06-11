@@ -1,162 +1,119 @@
-import React, { useState } from "react";
-import {
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signOut,
-} from "firebase/auth";
-import { auth } from "./Firebase";
-import "./register.css";
-import { FaGithub, FaGoogle } from "react-icons/fa";
-import { redirect } from "react-router-dom";
-// import { useHistory } from "react-router-dom";
+import React, { useRef, useState } from "react";
+import { Form, Button, Card, Alert } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 
-const RegistrationForm: React.FC = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [registered, setRegistered] = useState(false);
-  // const history = useHistory();
+const Signup = () => {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const passwordConfirmRef = useRef<HTMLInputElement>(null);
+  const { signup } = useAuth();
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      // Perform registration logic
-      console.log("Registration successful");
-      redirect("/");
-
-      // Update registered state
-      setRegistered(true);
-    } catch (error) {
-      console.log("Registration failed:", error);
+    if (
+      passwordRef.current?.value !== passwordConfirmRef.current?.value
+    ) {
+      return setError("Passwords Do Not Match");
     }
-  };
-
-  const handleGoogleSignUp = async () => {
-    const provider = new GoogleAuthProvider();
 
     try {
-      await signInWithPopup(auth, provider);
-      // Perform registration logic
-      console.log("Google sign-up successful");
-      redirect("/");
-
-      // Update registered state
-      setRegistered(true);
-    } catch (error) {
-      console.log("Google sign-up failed:", error);
+      setError("");
+      setLoading(true);
+      if (emailRef.current && passwordRef.current) {
+        await signup(emailRef.current.value, passwordRef.current.value);
+        navigate("/hospitals");
+      }
+    } catch {
+      setError("Failed To Create An Account");
     }
-  };
 
-  const handleGithubSignUp = async () => {
-    const provider = new GithubAuthProvider();
-
-    try {
-      await signInWithPopup(auth, provider);
-      // Perform registration logic
-      console.log("GitHub sign-up successful");
-      redirect("/");
-
-      // Update registered state
-      setRegistered(true);
-    } catch (error) {
-      console.log("GitHub sign-up failed:", error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      console.log("Logout successful");
-      // Redirect to login page or any desired location after logout
-      window.location.href = "/";
-    } catch (error) {
-      console.log("Logout failed:", error);
-    }
-  };
+    setLoading(false);
+  }
 
   return (
-    <div className="registration-form-wrapper">
-      {registered ? (
-        <div>
-          <h1>Welcome, {name}!</h1>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <div className="registration-form">
-          <h2>Registration Form</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name">Name:</label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">Email:</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Password:</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit">Register</button>
-            <button onClick={handleGoogleSignUp}>
-              <FaGoogle />
-            </button>
-            <button onClick={handleGithubSignUp}>
-              <FaGithub />
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+    <>
+      <Card>
+        <Card.Body>
+          <h2 className="text-center mb-4">Sign Up</h2>
+
+          {error && <Alert variant="danger">{error}</Alert>}
+
+          <Form onSubmit={handleSubmit}>
+            <Form.Group id="email">
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" ref={emailRef} required />
+            </Form.Group>
+            <Form.Group id="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" ref={passwordRef} required />
+            </Form.Group>
+            <Form.Group id="password-confirm">
+              <Form.Label>Password Confirmation</Form.Label>
+              <Form.Control type="password" ref={passwordConfirmRef} required />
+            </Form.Group>
+            <Button disabled={loading} className="w-100" type="submit">
+              Sign Up
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+      <div className="w-100 text-center mt-2">
+        Already have an account? <Link to="/signin">Sign In</Link>
+      </div>
+    </>
   );
 };
 
-export default RegistrationForm;
+export default Signup;
 
-// import React, { useState } from "react";
-// import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signOut } from "firebase/auth";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useState } from "react";
+// import {
+//   createUserWithEmailAndPassword,
+//   signInWithPopup,
+//   GoogleAuthProvider,
+//   signOut,
+// } from "firebase/auth";
 // import { auth } from "./Firebase";
 // import "./register.css";
-// import { FaGithub, FaGoogle } from "react-icons/fa";
+// import { FaGoogle } from "react-icons/fa";
+// import { useNavigate } from "react-router-dom";
 
-// const RegistrationForm: React.FC = () => {
+// const RegistrationForm = () => {
 //   const [name, setName] = useState("");
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [registered, setRegistered] = useState(false);
+//   const navigate = useNavigate();
 
-//   const handleSubmit = async (e: React.FormEvent) => {
+//   const handleSubmit = async (e: { preventDefault: () => void }) => {
 //     e.preventDefault();
 
 //     try {
 //       await createUserWithEmailAndPassword(auth, email, password);
 //       // Perform registration logic
 //       console.log("Registration successful");
-
-//       // Update registered state
 //       setRegistered(true);
+//       navigate("/hospitals"); // Navigate to the "/hospitals" route
 //     } catch (error) {
 //       console.log("Registration failed:", error);
 //     }
@@ -169,26 +126,10 @@ export default RegistrationForm;
 //       await signInWithPopup(auth, provider);
 //       // Perform registration logic
 //       console.log("Google sign-up successful");
-
-//       // Update registered state
 //       setRegistered(true);
+//       navigate("/hospitals"); // Navigate to the "/hospitals" route
 //     } catch (error) {
 //       console.log("Google sign-up failed:", error);
-//     }
-//   };
-
-//   const handleGithubSignUp = async () => {
-//     const provider = new GithubAuthProvider();
-
-//     try {
-//       await signInWithPopup(auth, provider);
-//       // Perform registration logic
-//       console.log("GitHub sign-up successful");
-
-//       // Update registered state
-//       setRegistered(true);
-//     } catch (error) {
-//       console.log("GitHub sign-up failed:", error);
 //     }
 //   };
 
@@ -196,166 +137,62 @@ export default RegistrationForm;
 //     try {
 //       await signOut(auth);
 //       console.log("Logout successful");
-//       // Reload the page to show the registration form again
-//       window.location.reload();
+//       window.location.href = "/";
 //     } catch (error) {
 //       console.log("Logout failed:", error);
 //     }
 //   };
 
-//   if (registered) {
-//     return (
-//       <div>
-//         <h1>Welcome, {name}!</h1>
-//         <button onClick={handleLogout}>Logout</button>
-//       </div>
-//     );
-//   }
-
 //   return (
 //     <div className="registration-form-wrapper">
-//       <div className="registration-form">
-//         <h2>Registration Form</h2>
-//         <form onSubmit={handleSubmit}>
-//           <div className="form-group">
-//             <label htmlFor="name">Name:</label>
-//             <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-//           </div>
-//           <div className="form-group">
-//             <label htmlFor="email">Email:</label>
-//             <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-//           </div>
-//           <div className="form-group">
-//             <label htmlFor="password">Password:</label>
-//             <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-//           </div>
-//           <button type="submit">Register</button>
-//           <button onClick={handleGoogleSignUp}><FaGoogle /></button>
-//           <button onClick={handleGithubSignUp}><FaGithub /></button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
+//       {registered ? (
+//         <div>
+//           <h1>Welcome, {name}!</h1>
+//           <button onClick={handleLogout}>Logout</button>
+//         </div>
+//       ) : (
+//         <div className="registration-form">
+//           <h2>Registration Form</h2>
+//           <form onSubmit={handleSubmit}>
+//             <div className="form-group">
+//               <label htmlFor="name">Name:</label>
+//               <input
+//                 type="text"
+//                 id="name"
+//                 value={name}
+//                 onChange={(e) => setName(e.target.value)}
+//                 required
+//               />
+//             </div>
+//             <div className="form-group">
+//               <label htmlFor="email">Email:</label>
+//               <input
+//                 type="email"
+//                 id="email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//                 required
+//               />
+//             </div>
+//             <div className="form-group">
+//               <label htmlFor="password">Password:</label>
+//               <input
+//                 type="password"
+//                 id="password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//                 required
+//               />
+//             </div>
+//             <button onClick={() => navigate("/hospitals")} type="submit">Register</button>
 
-// export default RegistrationForm;
-
-// import React from "react";
-// import {
-//   createUserWithEmailAndPassword,
-//   signInWithPopup,
-//   GoogleAuthProvider,
-//   GithubAuthProvider,
-// } from "firebase/auth";
-// import { auth } from "./Firebase";
-// import "./register.css";
-// import { FaGithub, FaGoogle } from "react-icons/fa";
-
-// const RegistrationForm: React.FC = () => {
-//   const [name, setName] = React.useState("");
-//   const [email, setEmail] = React.useState("");
-//   const [password, setPassword] = React.useState("");
-//   const [registered, setRegistered] = React.useState(false);
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     try {
-//       await createUserWithEmailAndPassword(auth, email, password);
-//       // Perform registration logic
-//       console.log("Registration successful");
-//       setRegistered(true);
-//       redirectHome();
-//     } catch (error) {
-//       console.log("Registration failed:", error);
-//     }
-//   };
-
-//   const handleGoogleSignUp = async () => {
-//     const provider = new GoogleAuthProvider();
-
-//     try {
-//       await signInWithPopup(auth, provider);
-//       // Perform registration logic
-//       console.log("Google sign-up successful");
-//       setRegistered(true);
-//       redirectHome();
-//     } catch (error) {
-//       console.log("Google sign-up failed:", error);
-//     }
-//   };
-
-//   const handleGithubSignUp = async () => {
-//     const provider = new GithubAuthProvider();
-
-//     try {
-//       await signInWithPopup(auth, provider);
-//       // Perform registration logic
-//       console.log("GitHub sign-up successful");
-//       setRegistered(true);
-//       redirectHome();
-//     } catch (error) {
-//       console.log("GitHub sign-up failed:", error);
-//     }
-//   };
-
-//   const redirectHome = () => {
-//     window.location.href = "/";
-//   };
-
-//   if (registered) {
-//     return (
-//       <div>
-//         <p>welcome,{name}.</p>
-//         {/* <button onClick={redirectHome}>Home</button> */}
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="registration-form-wrapper">
-//       <div className="registration-form">
-//         <h2>Registration Form</h2>
-//         <form onSubmit={handleSubmit}>
-//           <div className="form-group">
-//             <label htmlFor="name">Name:</label>
-//             <input
-//               type="text"
-//               id="name"
-//               value={name}
-//               onChange={(e) => setName(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <div className="form-group">
-//             <label htmlFor="email">Email:</label>
-//             <input
-//               type="email"
-//               id="email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <div className="form-group">
-//             <label htmlFor="password">Password:</label>
-//             <input
-//               type="password"
-//               id="password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <button type="submit">Register</button>
-//           <button onClick={handleGoogleSignUp}>
-//             <FaGoogle />
-//           </button>
-//           <button onClick={handleGithubSignUp}>
-//             <FaGithub />
-//           </button>
-//         </form>
-//       </div>
+//             <button onClick={handleGoogleSignUp}>
+//               <FaGoogle />
+//             </button>
+//           </form>
+//           <button onClick={() => navigate("/login")}>Login</button>
+//         </div>
+//       )}
 //     </div>
 //   );
 // };

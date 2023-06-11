@@ -2,12 +2,18 @@ import { useEffect, useState } from "react";
 import "./navigation.css";
 import { CgDetailsMore } from "react-icons/cg";
 import { ImCancelCircle } from "react-icons/im";
-import { Link } from "react-router-dom";
+import { Link, useLocation} from "react-router-dom";
+
+
 
 const Navigation = () => {
   const [open, setOpen] = useState<boolean>(false);
 
   const [offset] = WindowOffSet();
+const location = useLocation();
+
+console.log(location.pathname);
+  
 
   const handleLinkClick = () => {
     setOpen(false);
@@ -30,12 +36,12 @@ const Navigation = () => {
               </Link>
             </li>
             <li>
-              <Link to="/register" onClick={handleLinkClick}>
+              <Link to="/signup" onClick={handleLinkClick}>
                 Register
               </Link>
             </li>
             <li>
-              <Link to="/login" onClick={handleLinkClick}>
+              <Link to="/signin" onClick={handleLinkClick}>
                 Login
               </Link>
             </li>
